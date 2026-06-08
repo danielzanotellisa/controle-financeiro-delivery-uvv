@@ -1,0 +1,829 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "controle-financeiro-delivery",
+    "languages": [
+      "javascript",
+      "json",
+      "markdown"
+    ],
+    "frameworks": [
+      "React Native",
+      "Expo",
+      "React Navigation"
+    ],
+    "description": "A React Native / Expo mobile app for financial control of delivery operations, providing transaction tracking and summary reporting for delivery businesses.",
+    "analyzedAt": "2026-06-08T10:30:14.692335Z",
+    "gitCommitHash": "none"
+  },
+  "nodes": [
+    {
+      "id": "file:App.js",
+      "type": "file",
+      "name": "App.js",
+      "filePath": "App.js",
+      "summary": "Core application file for the delivery finance tracker, containing the React context provider, all screen components (Cadastro, Dashboard, Transacoes, NovaTransacao, DetalhesTransacao), navigation setup with a drawer navigator, and utility helpers for currency formatting and email validation.",
+      "tags": [
+        "entry-point",
+        "component",
+        "service",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:AppProvider",
+      "type": "function",
+      "name": "AppProvider",
+      "filePath": "App.js",
+      "lineRange": [
+        40,
+        110
+      ],
+      "summary": "React context provider that manages global application state including transactions, user data, loading state, and API status; exposes carregarTransacoes and adicionarTransacao actions to the component tree.",
+      "tags": [
+        "service",
+        "event-handler",
+        "singleton"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:CadastroScreen",
+      "type": "function",
+      "name": "CadastroScreen",
+      "filePath": "App.js",
+      "lineRange": [
+        123,
+        188
+      ],
+      "summary": "Screen component for new user registration, collecting name, email, phone, and password with inline validation before calling the cadastrarUsuario action.",
+      "tags": [
+        "component",
+        "validation",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:DashboardScreen",
+      "type": "function",
+      "name": "DashboardScreen",
+      "filePath": "App.js",
+      "lineRange": [
+        205,
+        273
+      ],
+      "summary": "Main dashboard screen component that computes and displays income, expense, and balance summaries using memoized reductions over the transaction list.",
+      "tags": [
+        "component",
+        "data-model"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:TransacoesScreen",
+      "type": "function",
+      "name": "TransacoesScreen",
+      "filePath": "App.js",
+      "lineRange": [
+        275,
+        366
+      ],
+      "summary": "Transactions list screen that provides filterable and categorized views of all transactions with navigation to transaction detail.",
+      "tags": [
+        "component",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:NovaTransacaoScreen",
+      "type": "function",
+      "name": "NovaTransacaoScreen",
+      "filePath": "App.js",
+      "lineRange": [
+        368,
+        463
+      ],
+      "summary": "Form screen for creating a new financial transaction, with fields for type, description, value, category, account, payee, and store, including numeric validation and API submission.",
+      "tags": [
+        "component",
+        "validation",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:App.js:DetalhesTransacaoScreen",
+      "type": "function",
+      "name": "DetalhesTransacaoScreen",
+      "filePath": "App.js",
+      "lineRange": [
+        465,
+        508
+      ],
+      "summary": "Screen component displaying the full details of a selected transaction with formatted currency values.",
+      "tags": [
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:App.js:Routes",
+      "type": "function",
+      "name": "Routes",
+      "filePath": "App.js",
+      "lineRange": [
+        525,
+        555
+      ],
+      "summary": "Navigation router function that conditionally renders either the registration screen or the drawer navigator depending on whether the user is registered.",
+      "tags": [
+        "component",
+        "entry-point"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:App.js:App",
+      "type": "function",
+      "name": "App",
+      "filePath": "App.js",
+      "lineRange": [
+        557,
+        567
+      ],
+      "summary": "Root application component that wraps Routes inside the AppProvider context, serving as the Expo entry point exported as default.",
+      "tags": [
+        "entry-point",
+        "component"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:components/BotaoSecundario",
+      "type": "file",
+      "name": "BotaoSecundario",
+      "filePath": "components/BotaoSecundario",
+      "summary": "React Native secondary button component that wraps a TouchableOpacity with shared stylesheet styling, used as a styled alternative action button throughout the app.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:components/BotaoSecundario:BotaoSecundario",
+      "type": "function",
+      "name": "BotaoSecundario",
+      "filePath": "components/BotaoSecundario",
+      "lineRange": [
+        5,
+        11
+      ],
+      "summary": "Exported secondary button component accepting children and onPress props, rendered as a styled TouchableOpacity.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:components/StatusApiBox.js",
+      "type": "file",
+      "name": "StatusApiBox.js",
+      "filePath": "components/StatusApiBox.js",
+      "summary": "UI component that renders a visual status indicator box showing the current API connectivity state and data source (remote or local fallback) to the user.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:components/StatusApiBox.js:StatusApiBox",
+      "type": "function",
+      "name": "StatusApiBox",
+      "filePath": "components/StatusApiBox.js",
+      "lineRange": [
+        5,
+        37
+      ],
+      "summary": "Exported React Native component displaying a colored status box with API connectivity information and the data origin message.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:index.js",
+      "type": "file",
+      "name": "index.js",
+      "filePath": "index.js",
+      "summary": "Expo application entry point that registers the root App component with the Expo runtime using registerRootComponent.",
+      "tags": [
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:services/api.js",
+      "type": "file",
+      "name": "api.js",
+      "filePath": "services/api.js",
+      "summary": "API service module for the delivery finance tracker that provides REST-based transaction fetching and creation with graceful fallback to local mock data when the remote API is unavailable.",
+      "tags": [
+        "service",
+        "api-handler",
+        "utility"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:services/api.js:apiEstaConfigurada",
+      "type": "function",
+      "name": "apiEstaConfigurada",
+      "filePath": "services/api.js",
+      "lineRange": [
+        102,
+        104
+      ],
+      "summary": "Exported helper that checks whether the API_URL is configured to a real host (not localhost or placeholder), determining if the remote API should be used.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:services/api.js:normalizarTransacao",
+      "type": "function",
+      "name": "normalizarTransacao",
+      "filePath": "services/api.js",
+      "lineRange": [
+        106,
+        119
+      ],
+      "summary": "Internal helper that normalizes a raw transaction object from the API or local store into a consistent shape with guaranteed id, date, and numeric value fields.",
+      "tags": [
+        "utility",
+        "serialization",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:components/BotaoPrincipal.js",
+      "type": "file",
+      "name": "BotaoPrincipal.js",
+      "filePath": "components/BotaoPrincipal.js",
+      "summary": "Reusable primary button component for the delivery finance app, rendering a styled TouchableOpacity using shared styles.",
+      "tags": [
+        "component",
+        "ui",
+        "button"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:components/Campo.js",
+      "type": "file",
+      "name": "Campo.js",
+      "filePath": "components/Campo.js",
+      "summary": "Reusable text input field component that wraps a labeled TextInput with consistent styling from the shared stylesheet.",
+      "tags": [
+        "component",
+        "ui",
+        "input"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:components/Campo.js:Campo",
+      "type": "function",
+      "name": "Campo",
+      "filePath": "components/Campo.js",
+      "lineRange": [
+        5,
+        20
+      ],
+      "summary": "Exported React Native functional component rendering a labeled text input field with shared styles applied.",
+      "tags": [
+        "component",
+        "ui",
+        "input"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:components/CardResumo.js",
+      "type": "file",
+      "name": "CardResumo.js",
+      "filePath": "components/CardResumo.js",
+      "summary": "Summary card component that displays a financial metric (label and value) in a styled card layout for the delivery finance dashboard.",
+      "tags": [
+        "component",
+        "ui",
+        "data-display"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:components/TransacaoItem.js",
+      "type": "file",
+      "name": "TransacaoItem.js",
+      "filePath": "components/TransacaoItem.js",
+      "summary": "List item component for displaying individual financial transactions with type, description, and BRL-formatted monetary value.",
+      "tags": [
+        "component",
+        "ui",
+        "data-display"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:components/TransacaoItem.js:TransacaoItem",
+      "type": "function",
+      "name": "TransacaoItem",
+      "filePath": "components/TransacaoItem.js",
+      "lineRange": [
+        12,
+        31
+      ],
+      "summary": "Exported React Native functional component rendering a transaction row with color-coded type indicator, description text, and currency-formatted amount.",
+      "tags": [
+        "component",
+        "ui",
+        "data-display"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:styles.js",
+      "type": "file",
+      "name": "styles.js",
+      "filePath": "styles.js",
+      "summary": "Centralized StyleSheet definitions for the entire delivery finance app, providing a single shared styles object consumed by all UI components.",
+      "tags": [
+        "utility",
+        "configuration",
+        "ui"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses React Native StyleSheet.create for style definitions; the single exported object is imported by every component in the project."
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Boilerplate Expo Snack readme describing how to open and preview the project \u2014 largely a default template placeholder rather than project-specific documentation.",
+      "tags": [
+        "documentation",
+        "expo",
+        "getting-started"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:app.json",
+      "type": "config",
+      "name": "app.json",
+      "filePath": "app.json",
+      "summary": "Expo app configuration defining the app name, slug, icon assets, splash screen, orientation, and platform-specific settings (iOS tablet support, Android adaptive icon, web favicon) with the new architecture enabled.",
+      "tags": [
+        "configuration",
+        "expo",
+        "mobile",
+        "build-system"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Sets newArchEnabled: true, opting in to the React Native new architecture (JSI/Fabric)."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "NPM package manifest declaring the Expo-based React Native dependency set, including navigation (React Navigation drawer), UI components (react-native-paper, vector-icons), gesture/animation libraries (reanimated, gesture-handler), and dev scripts for all target platforms.",
+      "tags": [
+        "configuration",
+        "dependencies",
+        "build-system",
+        "react-native"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.DS_Store",
+      "type": "file",
+      "name": ".DS_Store",
+      "filePath": ".DS_Store",
+      "summary": "macOS system-generated binary file storing Finder metadata such as icon positions and view settings; has no code significance and should be excluded from version control.",
+      "tags": [
+        "system-file",
+        "binary",
+        "macos",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Configuration file for the understand-anything analysis tool that specifies file and directory patterns to exclude from codebase knowledge graph generation.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "analysis",
+        "ignore-patterns"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:AppProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:CadastroScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:DashboardScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:TransacoesScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:NovaTransacaoScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:DetalhesTransacaoScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:Routes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:App.js",
+      "target": "function:App.js:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/BotaoPrincipal.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/BotaoSecundario",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/Campo.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/CardResumo.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/StatusApiBox.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:components/TransacaoItem.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:services/api.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:App.js:AppProvider",
+      "target": "function:services/api.js:apiEstaConfigurada",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:components/BotaoSecundario",
+      "target": "function:components/BotaoSecundario:BotaoSecundario",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:components/BotaoSecundario",
+      "target": "function:components/BotaoSecundario:BotaoSecundario",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:components/StatusApiBox.js",
+      "target": "function:components/StatusApiBox.js:StatusApiBox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:components/StatusApiBox.js",
+      "target": "function:components/StatusApiBox.js:StatusApiBox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:components/StatusApiBox.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:index.js",
+      "target": "file:App.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:services/api.js",
+      "target": "function:services/api.js:apiEstaConfigurada",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:services/api.js",
+      "target": "function:services/api.js:normalizarTransacao",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:services/api.js",
+      "target": "function:services/api.js:apiEstaConfigurada",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:components/BotaoPrincipal.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:components/Campo.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:components/CardResumo.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:components/TransacaoItem.js",
+      "target": "file:styles.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:components/Campo.js",
+      "target": "function:components/Campo.js:Campo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:components/Campo.js",
+      "target": "function:components/Campo.js:Campo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:components/TransacaoItem.js",
+      "target": "function:components/TransacaoItem.js:TransacaoItem",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:components/TransacaoItem.js",
+      "target": "function:components/TransacaoItem.js:TransacaoItem",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:entry",
+      "name": "Application Entry",
+      "description": "Expo bootstrap entry point that registers the root component and launches the React Native application.",
+      "nodeIds": [
+        "file:index.js"
+      ]
+    },
+    {
+      "id": "layer:app-core",
+      "name": "App Core",
+      "description": "Monolithic application shell housing all screen components (Cadastro, Dashboard, Transacoes, NovaTransacao, DetalhesTransacao), the React context provider for global state, drawer navigation setup, and shared formatting utilities.",
+      "nodeIds": [
+        "file:App.js"
+      ]
+    },
+    {
+      "id": "layer:ui",
+      "name": "UI Components",
+      "description": "Reusable presentational components \u2014 buttons, form fields, summary cards, transaction list items, and API status indicator \u2014 that compose the delivery finance app's visual interface.",
+      "nodeIds": [
+        "file:components/BotaoPrincipal.js",
+        "file:components/BotaoSecundario",
+        "file:components/Campo.js",
+        "file:components/CardResumo.js",
+        "file:components/StatusApiBox.js",
+        "file:components/TransacaoItem.js",
+        "file:styles.js"
+      ]
+    },
+    {
+      "id": "layer:service",
+      "name": "Service Layer",
+      "description": "API integration module that fetches and creates financial transactions against the remote REST backend, with automatic fallback to local mock data when the API is unreachable.",
+      "nodeIds": [
+        "file:services/api.js"
+      ]
+    },
+    {
+      "id": "layer:project-support",
+      "name": "Project Support",
+      "description": "Expo and NPM configuration, project documentation, macOS metadata artifact, and analysis tooling ignore rules that support the build, distribution, and development workflow.",
+      "nodeIds": [
+        "config:app.json",
+        "config:package.json",
+        "document:README.md",
+        "file:.DS_Store",
+        "file:.understand-anything/.understandignore"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Application Entry Point",
+      "description": "index.js is the first file Expo executes when the app launches. It does one job: call registerRootComponent with the App component, handing control to React Native's runtime. Understanding this file tells you where the dependency chain begins and confirms the app uses Expo's managed workflow rather than a bare React Native setup.",
+      "nodeIds": [
+        "file:index.js"
+      ],
+      "languageLesson": "Expo's registerRootComponent wraps the root component with AppRegistry.registerComponent and applies any necessary Expo-specific providers. This single call replaces the boilerplate you would write manually in a bare React Native project."
+    },
+    {
+      "order": 2,
+      "title": "Project Configuration",
+      "description": "Before reading any application logic, it helps to understand what the project is and what it depends on. app.json defines the Expo app's identity \u2014 its name, icon, splash screen, and platform targets. package.json declares every runtime and dev dependency, revealing that this app is built on React Native with Expo, uses React Navigation for drawer-based navigation, and has no backend framework of its own.",
+      "nodeIds": [
+        "config:app.json",
+        "config:package.json"
+      ],
+      "languageLesson": "Expo projects use app.json (or app.config.js) instead of native AndroidManifest.xml and Info.plist directly. The 'expo' key in app.json is the single source of truth for platform metadata during the managed workflow build process."
+    },
+    {
+      "order": 3,
+      "title": "Core Application: Navigation & State",
+      "description": "App.js is the heart of this project \u2014 it is unusually large because it colocates the React Context provider, all five screen components, the drawer navigator configuration, and utility helpers (currency formatting, email validation) in a single file. The Context provider holds the shared transaction state that flows down to every screen, making this file the architectural nexus of the entire application. Reading it gives you the complete mental model of how the app is structured.",
+      "nodeIds": [
+        "file:App.js"
+      ],
+      "languageLesson": "React Context combined with useState is a lightweight alternative to Redux for apps where global state is simple. The pattern here \u2014 a single provider at the root exporting a custom hook \u2014 means any child component can read or update the transaction list without prop drilling."
+    },
+    {
+      "order": 4,
+      "title": "Data Layer: API Service",
+      "description": "services/api.js decouples the network layer from the UI. It attempts REST calls to a remote backend for fetching and creating transactions, but falls back gracefully to local mock data when the API is unreachable. This resilience pattern is critical for a delivery-operations app that may be used in areas with poor connectivity, and it also makes the app fully demonstrable without a live backend.",
+      "nodeIds": [
+        "file:services/api.js"
+      ],
+      "languageLesson": "The try/catch fallback pattern used here is a service-boundary exception handler \u2014 exactly the right place for it. Intermediate calls within the app let errors bubble up to this boundary, where they are handled once and a safe default is returned rather than crashing the UI."
+    },
+    {
+      "order": 5,
+      "title": "Shared Visual Language",
+      "description": "styles.js is the single most imported file in the project, consumed by App.js and every reusable component. By centralizing all StyleSheet definitions here, the app enforces a consistent visual language \u2014 colors, spacing, typography \u2014 across every screen and component. Any change to the app's appearance starts here. Its fan-in of 6 makes it the most structurally critical leaf node in the dependency graph.",
+      "nodeIds": [
+        "file:styles.js"
+      ],
+      "languageLesson": "React Native's StyleSheet.create() validates style objects at app startup and optimizes them by sending the style data to the native layer once rather than on every render. Centralizing styles in one file also prevents style drift, where similar UI elements gradually diverge because their styles are defined independently."
+    },
+    {
+      "order": 6,
+      "title": "Form Input Components",
+      "description": "Campo.js provides a reusable text input field that wraps React Native's TextInput with consistent styling from styles.js. It is used across the registration (Cadastro) and new-transaction (NovaTransacao) screens wherever the user needs to enter data. Standardizing form inputs this way ensures consistent validation UX and makes it easy to add features like error states or accessibility labels in one place.",
+      "nodeIds": [
+        "file:components/Campo.js"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Action Button Components",
+      "description": "BotaoPrincipal.js and BotaoSecundario provide the two tiers of call-to-action in the app. The primary button (BotaoPrincipal) handles confirmatory actions like saving a transaction, while the secondary button handles lower-emphasis actions like cancellation or navigation. Both pull their styles from the centralized styles.js, ensuring the visual hierarchy is applied consistently across every screen that uses them.",
+      "nodeIds": [
+        "file:components/BotaoPrincipal.js",
+        "file:components/BotaoSecundario"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Financial Summary Card",
+      "description": "CardResumo.js renders a single financial metric \u2014 such as total income, total expenses, or net balance \u2014 in a card layout on the Dashboard screen. The Dashboard composes multiple CardResumo instances side by side to give the delivery operator a quick overview of their financial position. This component is the primary vehicle for the app's core reporting value proposition.",
+      "nodeIds": [
+        "file:components/CardResumo.js"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Transaction List & API Status",
+      "description": "TransacaoItem.js renders each individual transaction in the Transacoes screen list, displaying the relevant details (description, amount, date, type) from the data fetched by api.js. StatusApiBox.js complements this by surfacing the current API connectivity state to the user \u2014 when the fallback mock data is active, this component makes that transparent rather than silently showing stale data. Together they form the complete transaction browsing experience.",
+      "nodeIds": [
+        "file:components/TransacaoItem.js",
+        "file:components/StatusApiBox.js"
+      ]
+    }
+  ]
+}
