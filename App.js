@@ -1,8 +1,8 @@
-import 'react-native-gesture-handler';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -10,17 +10,9 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-} from '@react-navigation/drawer';
-import { Picker } from '@react-native-picker/picker';
-
 import { styles } from './styles';
 import { apiService, apiEstaConfigurada } from './services/api';
 import { Campo } from './components/Campo';
@@ -30,7 +22,6 @@ import { CardResumo } from './components/CardResumo';
 import { StatusApiBox } from './components/StatusApiBox';
 import { TransacaoItem } from './components/TransacaoItem';
 
-const Drawer = createDrawerNavigator();
 const AppContext = createContext({});
 
 function useApp() {
@@ -121,17 +112,26 @@ function validarEmail(email) {
 }
 
 function CadastroScreen({ navigation }) {
-  const { cadastrarUsuario } = useApp();
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
+  const { cadastrarUsuario, usuario } = useApp();
+  const estaLogado = !!usuario;
+  const [nome, setNome] = useState(usuario?.nome || '');
+  const [email, setEmail] = useState(usuario?.email || '');
+  const [telefone, setTelefone] = useState(usuario?.telefone || '');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [erro, setErro] = useState('');
 
+  useEffect(() => {
+    if (usuario) {
+      setNome(usuario.nome || '');
+      setEmail(usuario.email || '');
+      setTelefone(usuario.telefone || '');
+    }
+  }, [usuario]);
+
   function salvarCadastro() {
-    if (!nome.trim() || !email.trim() || !telefone.trim() || !senha.trim() || !confirmarSenha.trim()) {
-      setErro('Preencha todos os campos para continuar.');
+    if (!nome.trim() || !email.trim() || !telefone.trim()) {
+      setErro('Preencha nome, e-mail e telefone para continuar.');
       return;
     }
 
@@ -145,20 +145,29 @@ function CadastroScreen({ navigation }) {
       return;
     }
 
-    if (senha.length < 6) {
-      setErro('A senha precisa ter pelo menos 6 caracteres.');
-      return;
-    }
-
-    if (senha !== confirmarSenha) {
-      setErro('As senhas não conferem.');
-      return;
+    if (!estaLogado) {
+      if (!senha.trim() || !confirmarSenha.trim()) {
+        setErro('Preencha todos os campos para continuar.');
+        return;
+      }
+      if (senha.length < 6) {
+        setErro('A senha precisa ter pelo menos 6 caracteres.');
+        return;
+      }
+      if (senha !== confirmarSenha) {
+        setErro('As senhas não conferem.');
+        return;
+      }
     }
 
     cadastrarUsuario({ nome, email, telefone });
     setErro('');
-    Alert.alert('Conta criada', 'Seu cadastro foi salvo com sucesso.');
-    navigation.navigate('Início');
+    if (estaLogado) {
+      Alert.alert('Dados atualizados', 'Suas informações foram atualizadas com sucesso.');
+    } else {
+      Alert.alert('Conta criada', 'Seu cadastro foi salvo com sucesso.');
+      navigation.navigate('Início');
+    }
   }
 
   return (
@@ -167,21 +176,30 @@ function CadastroScreen({ navigation }) {
       style={styles.screen}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.pageEyebrow}>Bem-vindo</Text>
-        <Text style={styles.pageTitle}>Criar conta</Text>
+        <Text style={styles.pageEyebrow}>{estaLogado ? 'Minha conta' : 'Bem-vindo'}</Text>
+        <Text style={styles.pageTitle}>{estaLogado ? 'Meus dados' : 'Criar conta'}</Text>
         <Text style={styles.pageSubtitle}>
-          Informe seus dados para acessar o controle financeiro do delivery.
+          {estaLogado
+            ? 'Confira ou atualize as informações da sua conta.'
+            : 'Informe seus dados para acessar o controle financeiro do delivery.'}
         </Text>
 
         <Campo label="Nome completo *" value={nome} onChangeText={setNome} placeholder="Ex: João Silva" />
         <Campo label="E-mail *" value={email} onChangeText={setEmail} placeholder="email@exemplo.com" keyboardType="email-address" />
         <Campo label="Telefone *" value={telefone} onChangeText={setTelefone} placeholder="(21) 99999-9999" keyboardType="phone-pad" />
-        <Campo label="Senha *" value={senha} onChangeText={setSenha} placeholder="Mínimo de 6 caracteres" secureTextEntry />
-        <Campo label="Confirmar senha *" value={confirmarSenha} onChangeText={setConfirmarSenha} placeholder="Repita sua senha" secureTextEntry />
+
+        {!estaLogado && (
+          <>
+            <Campo label="Senha *" value={senha} onChangeText={setSenha} placeholder="Mínimo de 6 caracteres" secureTextEntry />
+            <Campo label="Confirmar senha *" value={confirmarSenha} onChangeText={setConfirmarSenha} placeholder="Repita sua senha" secureTextEntry />
+          </>
+        )}
 
         {erro ? <Text style={styles.errorText}>{erro}</Text> : null}
 
-        <BotaoPrincipal onPress={salvarCadastro}>Entrar no painel</BotaoPrincipal>
+        <BotaoPrincipal onPress={salvarCadastro}>
+          {estaLogado ? 'Atualizar informações' : 'Entrar no painel'}
+        </BotaoPrincipal>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -274,21 +292,6 @@ function DashboardScreen({ navigation }) {
 
 function TransacoesScreen({ navigation }) {
   const { usuario, transacoes, carregarTransacoes, carregando } = useApp();
-  const [filtroTipo, setFiltroTipo] = useState('todas');
-  const [filtroCategoria, setFiltroCategoria] = useState('todas');
-
-  const categorias = useMemo(() => {
-    const lista = transacoes.map((item) => item.categoria).filter(Boolean);
-    return ['todas', ...new Set(lista)];
-  }, [transacoes]);
-
-  const transacoesFiltradas = useMemo(() => {
-    return transacoes.filter((item) => {
-      const filtroPorTipo = filtroTipo === 'todas' || item.tipo === filtroTipo;
-      const filtroPorCategoria = filtroCategoria === 'todas' || item.categoria === filtroCategoria;
-      return filtroPorTipo && filtroPorCategoria;
-    });
-  }, [transacoes, filtroTipo, filtroCategoria]);
 
   if (!usuario) {
     return <TelaCadastroObrigatorio navigation={navigation} />;
@@ -301,49 +304,9 @@ function TransacoesScreen({ navigation }) {
         <Text style={styles.pageTitle}>Movimentações</Text>
         <Text style={styles.pageSubtitle}>Veja tudo que entrou e saiu do caixa.</Text>
 
-        <View style={styles.filtersCard}>
-          <View style={styles.filterRow}>
-            <View style={styles.filterBox}>
-              <Text style={styles.filterLabel}>Tipo</Text>
-              <View style={styles.pickerInput}>
-                <Picker
-                  selectedValue={filtroTipo}
-                  onValueChange={(value) => setFiltroTipo(value)}
-                  style={styles.picker}
-                  dropdownIconColor="#111827"
-                >
-                  <Picker.Item label="Todas" value="todas" />
-                  <Picker.Item label="Entradas" value="entrada" />
-                  <Picker.Item label="Saídas" value="saida" />
-                </Picker>
-              </View>
-            </View>
-
-            <View style={styles.filterBox}>
-              <Text style={styles.filterLabel}>Categoria</Text>
-              <View style={styles.pickerInput}>
-                <Picker
-                  selectedValue={filtroCategoria}
-                  onValueChange={(value) => setFiltroCategoria(value)}
-                  style={styles.picker}
-                  dropdownIconColor="#111827"
-                >
-                  {categorias.map((categoria) => (
-                    <Picker.Item
-                      key={categoria}
-                      label={categoria === 'todas' ? 'Todas' : categoria}
-                      value={categoria}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          </View>
-        </View>
-
         <FlatList
           style={styles.listaTransacoes}
-          data={transacoesFiltradas}
+          data={transacoes}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
@@ -430,18 +393,25 @@ function NovaTransacaoScreen({ navigation }) {
         <Text style={styles.pageTitle}>Novo lançamento</Text>
         <Text style={styles.pageSubtitle}>Registre uma entrada ou saída do seu caixa.</Text>
 
-        <View style={styles.pickerBox}>
-          <Text style={styles.filterLabel}>Tipo</Text>
-          <View style={styles.pickerInput}>
-            <Picker
-              selectedValue={tipo}
-              onValueChange={(value) => setTipo(value)}
-              style={styles.picker}
-              dropdownIconColor="#111827"
+        <View style={styles.toggleBox}>
+          <Text style={styles.toggleLabel}>Tipo *</Text>
+          <View style={styles.toggleRow}>
+            <TouchableOpacity
+              style={[styles.toggleButton, tipo === 'entrada' && styles.toggleButtonActiveEntrada]}
+              onPress={() => setTipo('entrada')}
             >
-              <Picker.Item label="Entrada" value="entrada" />
-              <Picker.Item label="Saída" value="saida" />
-            </Picker>
+              <Text style={[styles.toggleButtonText, tipo === 'entrada' && styles.toggleButtonTextActive]}>
+                Entrada
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toggleButton, tipo === 'saida' && styles.toggleButtonActiveSaida]}
+              onPress={() => setTipo('saida')}
+            >
+              <Text style={[styles.toggleButtonText, tipo === 'saida' && styles.toggleButtonTextActive]}>
+                Saída
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -507,61 +477,86 @@ function DetalhesTransacaoScreen({ route, navigation }) {
   );
 }
 
-function CustomDrawerContent(props) {
+const TELAS_MENU = ['Minha conta', 'Início', 'Movimentações', 'Novo lançamento'];
+
+function AppNavigator() {
   const { usuario } = useApp();
+  const [telaAtual, setTelaAtual] = useState('Minha conta');
+  const [drawerAberto, setDrawerAberto] = useState(false);
+  const [transacaoSelecionada, setTransacaoSelecionada] = useState(null);
+  const drawerAnim = useRef(new Animated.Value(-280)).current;
+
+  useEffect(() => {
+    Animated.timing(drawerAnim, {
+      toValue: drawerAberto ? 0 : -280,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
+  }, [drawerAberto]);
+
+  function navigate(tela, params) {
+    if (params?.transacao) setTransacaoSelecionada(params.transacao);
+    setTelaAtual(tela);
+    setDrawerAberto(false);
+  }
+
+  const navigation = { navigate, openDrawer: () => setDrawerAberto(true) };
+  const route = { params: { transacao: transacaoSelecionada } };
 
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContainer}>
-      <View style={styles.drawerHeader}>
-        <Text style={styles.drawerAppName}>Finanças Delivery</Text>
-        <Text style={styles.drawerUser}>{usuario ? usuario.nome : 'Acesso inicial'}</Text>
-        <Text style={styles.drawerEmail}>{usuario ? usuario.email : 'Crie sua conta para liberar o painel'}</Text>
+    <View style={{ flex: 1 }}>
+      <View style={styles.appHeader}>
+        <TouchableOpacity style={styles.appHeaderButton} onPress={() => setDrawerAberto(true)}>
+          <Text style={styles.appHeaderHamburger}>☰</Text>
+        </TouchableOpacity>
+        <Text style={styles.appHeaderTitle}>{telaAtual}</Text>
+        <View style={styles.appHeaderButton} />
       </View>
-      <DrawerItemList {...props} />
-    </DrawerContentScrollView>
-  );
-}
 
-function Routes() {
-  return (
-    <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="Minha conta"
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-          headerStyle: { backgroundColor: '#FFFFFF' },
-          headerTintColor: '#111827',
-          headerTitleStyle: { fontWeight: '800' },
-          headerShadowVisible: false,
-          drawerActiveTintColor: '#111827',
-          drawerInactiveTintColor: '#6B7280',
-          drawerActiveBackgroundColor: '#EEF2FF',
-          drawerLabelStyle: { fontWeight: '700' },
-          drawerStyle: { backgroundColor: '#FFFFFF' },
-        }}
-      >
-        <Drawer.Screen name="Minha conta" component={CadastroScreen} />
-        <Drawer.Screen name="Início" component={DashboardScreen} />
-        <Drawer.Screen name="Movimentações" component={TransacoesScreen} />
-        <Drawer.Screen name="Novo lançamento" component={NovaTransacaoScreen} />
-        <Drawer.Screen
-          name="Detalhes do lançamento"
-          component={DetalhesTransacaoScreen}
-          options={{ drawerItemStyle: { display: 'none' } }}
+      <View style={{ flex: 1 }}>
+        {telaAtual === 'Minha conta' && <CadastroScreen navigation={navigation} />}
+        {telaAtual === 'Início' && <DashboardScreen navigation={navigation} />}
+        {telaAtual === 'Movimentações' && <TransacoesScreen navigation={navigation} />}
+        {telaAtual === 'Novo lançamento' && <NovaTransacaoScreen navigation={navigation} />}
+        {telaAtual === 'Detalhes do lançamento' && <DetalhesTransacaoScreen navigation={navigation} route={route} />}
+      </View>
+
+      {drawerAberto && (
+        <TouchableOpacity
+          style={styles.drawerOverlay}
+          onPress={() => setDrawerAberto(false)}
+          activeOpacity={1}
         />
-      </Drawer.Navigator>
-    </NavigationContainer>
+      )}
+
+      <Animated.View style={[styles.drawerPanel, { transform: [{ translateX: drawerAnim }] }]}>
+        <View style={styles.drawerHeader}>
+          <Text style={styles.drawerAppName}>Finanças Delivery</Text>
+          <Text style={styles.drawerUser}>{usuario ? usuario.nome : 'Acesso inicial'}</Text>
+          <Text style={styles.drawerEmail}>{usuario ? usuario.email : 'Crie sua conta para liberar o painel'}</Text>
+        </View>
+        {TELAS_MENU.map((nome) => (
+          <TouchableOpacity
+            key={nome}
+            style={[styles.drawerNavItem, telaAtual === nome && styles.drawerNavItemActive]}
+            onPress={() => navigate(nome)}
+          >
+            <Text style={[styles.drawerNavItemText, telaAtual === nome && styles.drawerNavItemTextActive]}>
+              {nome}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </Animated.View>
+    </View>
   );
 }
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppProvider>
-        <SafeAreaView style={styles.safeArea}>
-          <Routes />
-        </SafeAreaView>
-      </AppProvider>
-    </GestureHandlerRootView>
+    <AppProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <AppNavigator />
+      </SafeAreaView>
+    </AppProvider>
   );
 }
