@@ -502,4 +502,34 @@ export const styles = StyleSheet.create({
   toggleButtonTextActive: {
     color: '#111827',
   },
+  welcomeContainer: {
+    padding: 28,
+    paddingBottom: 46,
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  welcomeHero: {
+    marginBottom: 36,
+  },
+  welcomeAppName: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: '#111827',
+    letterSpacing: -1.5,
+    marginBottom: 10,
+  },
+  welcomeTagline: {
+    fontSize: 16,
+    color: '#6B7280',
+    lineHeight: 24,
+  },
+  voltarButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+  },
+  voltarText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#6B7280',
+  },
 });

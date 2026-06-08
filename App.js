@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 import { styles } from './styles';
-import { apiService, apiEstaConfigurada } from './services/api';
+import { apiService, apiEstaConfigurada, contaMock } from './services/api';
 import { Campo } from './components/Campo';
 import { BotaoPrincipal } from './components/BotaoPrincipal';
 import { BotaoSecundario } from './components/BotaoSecundario';
@@ -29,6 +29,7 @@ function useApp() {
 }
 
 function AppProvider({ children }) {
+  const [autenticado, setAutenticado] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [transacoes, setTransacoes] = useState([]);
   const [carregando, setCarregando] = useState(false);
@@ -44,12 +45,23 @@ function AppProvider({ children }) {
     setCarregando(false);
   }
 
-  useEffect(() => {
-    carregarTransacoes();
-  }, []);
+  async function loginComMock(usuarioInput, senhaInput) {
+    if (usuarioInput === contaMock.usuario && senhaInput === contaMock.senha) {
+      setUsuario({ nome: contaMock.nome, email: contaMock.email, telefone: contaMock.telefone });
+      setAutenticado(true);
+      carregarTransacoes();
+      return true;
+    }
+    return false;
+  }
 
   function cadastrarUsuario(dadosUsuario) {
     setUsuario(dadosUsuario);
+    if (!autenticado) {
+      setAutenticado(true);
+      setTransacoes([]);
+      setMensagemApi('Nova conta criada. Registre seu primeiro lançamento.');
+    }
   }
 
   async function adicionarTransacao(novaTransacao) {
@@ -84,7 +96,9 @@ function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+        autenticado,
         usuario,
+        loginComMock,
         cadastrarUsuario,
         transacoes,
         adicionarTransacao,
@@ -477,6 +491,72 @@ function DetalhesTransacaoScreen({ route, navigation }) {
   );
 }
 
+function WelcomeScreen({ onEntrar, onCadastrar }) {
+  const [usuarioInput, setUsuarioInput] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+  const [entrando, setEntrando] = useState(false);
+
+  async function handleEntrar() {
+    if (!usuarioInput.trim() || !senha.trim()) {
+      setErro('Preencha usuário e senha.');
+      return;
+    }
+    setEntrando(true);
+    const ok = await onEntrar(usuarioInput.trim(), senha.trim());
+    setEntrando(false);
+    if (!ok) setErro('Usuário ou senha incorretos.');
+  }
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.screen}
+    >
+      <ScrollView contentContainerStyle={styles.welcomeContainer} keyboardShouldPersistTaps="handled">
+        <View style={styles.welcomeHero}>
+          <Text style={styles.welcomeAppName}>Finanças{'\n'}Delivery</Text>
+          <Text style={styles.welcomeTagline}>Controle financeiro do seu negócio</Text>
+        </View>
+
+        <Campo label="Usuário" value={usuarioInput} onChangeText={setUsuarioInput} placeholder="Ex: teste" />
+        <Campo label="Senha" value={senha} onChangeText={setSenha} placeholder="••••••" secureTextEntry />
+
+        {erro ? <Text style={styles.errorText}>{erro}</Text> : null}
+
+        <BotaoPrincipal onPress={entrando ? undefined : handleEntrar}>
+          {entrando ? 'Entrando...' : 'Entrar'}
+        </BotaoPrincipal>
+        <BotaoSecundario onPress={onCadastrar}>Criar conta</BotaoSecundario>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+function AuthFlow() {
+  const { loginComMock } = useApp();
+  const [tela, setTela] = useState('welcome');
+
+  if (tela === 'cadastro') {
+    return (
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity style={styles.voltarButton} onPress={() => setTela('welcome')}>
+          <Text style={styles.voltarText}>← Voltar</Text>
+        </TouchableOpacity>
+        <CadastroScreen navigation={{ navigate: () => {} }} />
+      </View>
+    );
+  }
+
+  return <WelcomeScreen onEntrar={loginComMock} onCadastrar={() => setTela('cadastro')} />;
+}
+
+function AppRoot() {
+  const { autenticado } = useApp();
+  if (!autenticado) return <AuthFlow />;
+  return <AppNavigator />;
+}
+
 const TELAS_MENU = ['Minha conta', 'Início', 'Movimentações', 'Novo lançamento'];
 
 function AppNavigator() {
@@ -555,7 +635,7 @@ export default function App() {
   return (
     <AppProvider>
       <SafeAreaView style={styles.safeArea}>
-        <AppNavigator />
+        <AppRoot />
       </SafeAreaView>
     </AppProvider>
   );

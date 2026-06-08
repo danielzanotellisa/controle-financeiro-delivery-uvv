@@ -1,5 +1,13 @@
 const API_URL = 'https://6a16fe2e1b90031f81b1db01.mockapi.io/api/v1/transacoes';
 
+export const contaMock = {
+  usuario: 'teste',
+  senha: 'teste',
+  nome: 'Usuário Teste',
+  email: 'teste@teste.com',
+  telefone: '(21) 99999-9999',
+};
+
 const dadosReserva = [
   {
     id: '1',
